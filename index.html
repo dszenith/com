@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE LEGENDS | Epic Community</title>
+    
+    <link rel="icon" type="image/png" href="LOGO.PNG">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #c89b3c;
+            --gold-light: #f0e6d2;
+            --blue-dark: #010a13;
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--blue-dark);
+            color: var(--gold-light);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(5, 30, 60, 0.6) 0%, transparent 100%),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+        }
+
+        #bg { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; }
+
+        #cursor-glow {
+            position: fixed; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(200, 155, 60, 0.08) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        /* --- NAV PROFESSIONALE --- */
+        header {
+            position: fixed; width: 100%; padding: 10px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(1, 10, 19, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(200, 155, 60, 0.3);
+            z-index: 1000;
+        }
+
+        .brand-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        #main-logo {
+            height: 85px; /* Ingrandito come richiesto */
+            width: auto;
+            filter: drop-shadow(0 0 15px rgba(200, 155, 60, 0.6));
+            transition: transform 0.1s ease-out;
+        }
+
+        #main-text {
+            font-family: 'Cinzel', serif; 
+            font-size: 1.8rem;
+            color: var(--gold); 
+            text-transform: uppercase; 
+            letter-spacing: 5px;
+            font-weight: 900;
+            text-shadow: 0 0 15px rgba(200, 155, 60, 0.4);
+            transition: transform 0.15s ease-out; /* Velocità diversa dal logo */
+        }
+
+        nav a {
+            margin-left: 35px; color: #a0946e; text-decoration: none;
+            text-transform: uppercase; font-size: 0.8rem; font-weight: 700;
+            letter-spacing: 2px; transition: var(--transition);
+            position: relative;
+        }
+
+        nav a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0;
+            height: 1px; background: var(--gold); transition: var(--transition);
+        }
+
+        nav a:hover { color: var(--gold-light); }
+        nav a:hover::after { width: 100%; }
+
+        /* --- PAGE SYSTEM --- */
+        .page {
+            display: none; min-height: 100vh; padding: 180px 10% 80px;
+            animation: pageEnter 0.6s ease-out forwards;
+        }
+        .page.active { display: block; }
+
+        @keyframes pageEnter {
+            from { opacity: 0; transform: scale(0.98) translateY(20px); filter: blur(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+
+        /* --- HERO --- */
+        .hero { text-align: center; max-width: 900px; margin: 0 auto; }
+        .hero h1 {
+            font-family: 'Cinzel', serif; font-size: clamp(3rem, 7vw, 5.5rem);
+            line-height: 0.95; margin-bottom: 30px; color: #fff;
+            background: linear-gradient(to bottom, #fff 40%, var(--gold) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .btn-epic {
+            position: relative; padding: 20px 60px; background: transparent;
+            color: var(--gold); font-family: 'Cinzel'; font-weight: 900;
+            border: 1px solid var(--gold); text-transform: uppercase;
+            overflow: hidden; transition: var(--transition); z-index: 1;
+        }
+
+        .btn-epic::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%;
+            height: 100%; background: var(--gold); transition: var(--transition); z-index: -1;
+        }
+
+        .btn-epic:hover { color: #000; }
+        .btn-epic:hover::before { left: 0; }
+
+        /* --- INTERACTIVE CARDS --- */
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px; margin-top: 80px; perspective: 1000px;
+        }
+
+        .card {
+            background: rgba(5, 20, 35, 0.7);
+            border: 1px solid rgba(200, 155, 60, 0.2);
+            padding: 50px 30px; text-align: center;
+            position: relative; transform-style: preserve-3d;
+            transition: border-color 0.3s;
+        }
+
+        .card:hover { border-color: var(--gold); }
+        .card i { font-size: 3rem; color: var(--gold); margin-bottom: 25px; transform: translateZ(50px); }
+        .card h3 { font-family: 'Cinzel'; font-size: 1.6rem; margin-bottom: 15px; transform: translateZ(30px); }
+
+        /* --- SOCIAL --- */
+        .social-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 25px 40px; border: 1px solid rgba(200, 155, 60, 0.2);
+            margin-bottom: 15px; background: rgba(255,255,255,0.02);
+            text-decoration: none; color: var(--gold-light);
+            transition: var(--transition);
+        }
+
+        .social-item:hover {
+            background: rgba(200, 155, 60, 0.1);
+            border-color: var(--gold);
+            transform: translateX(15px);
+        }
+
+        .social-item i { font-size: 1.5rem; color: var(--gold); }
+
+        footer {
+            padding: 100px; text-align: center; border-top: 1px solid rgba(200, 155, 60, 0.1);
+            background: #00050a; opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<div id="cursor-glow"></div>
+<canvas id="bg"></canvas>
+
+<header>
+    <div class="brand-container" onclick="showPage('home')">
+        <img src="LOGO.PNG" id="main-logo" alt="The Legends">
+        <div id="main-text">The Legends</div>
+    </div>
+    <nav>
+        <a onclick="showPage('home')">Home</a>
+        <a onclick="showPage('visione')">Codice</a>
+        <a onclick="showPage('social')">Legame</a>
+        <a href="https://discord.gg/M5YsRDkBkC" target="_blank" style="border: 1px solid var(--gold); padding: 10px 20px; color: var(--gold);">Entra</a>
+    </nav>
+</header>
+
+<div id="home" class="page active">
+    <div class="hero">
+        <h1>UNISCITI AI<br>MIGLIORI.</h1>
+        <p style="font-size: 1.2rem; color: #8892b0; margin-bottom: 40px; letter-spacing: 1px;">
+            Più che una community, una dinastia di giocatori chill.
+        </p>
+        <button class="btn-epic" onclick="showPage('social')">Inizia il Viaggio</button>
+    </div>
+</div>
+
+<div id="visione" class="page">
+    <h2 style="font-family: 'Cinzel'; font-size: 3rem; text-align: center; margin-bottom: 50px;">I Nostri Valori</h2>
+    <div class="grid">
+        <div class="card tilt">
+            <i class="fas fa-crown"></i>
+            <h3>Onore</h3>
+            <p>Rispettiamo ogni compagno, dal nabbo al pro. La tossicità non appartiene a queste terre.</p>
+        </div>
+        <div class="card tilt">
+            <i class="fas fa-fire"></i>
+            <h3>Passione</h3>
+            <p>Che sia una ranked o un building su Minecraft, lo facciamo con il cuore.</p>
+        </div>
+        <div class="card tilt">
+            <i class="fas fa-gem"></i>
+            <h3>Qualità</h3>
+            <p>Eventi organizzati, server stabili e una gestione sempre presente per te.</p>
+        </div>
+    </div>
+</div>
+
+<div id="social" class="page">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <h2 style="font-family: 'Cinzel'; font-size: 3rem; text-align: center; margin-bottom: 40px;">Seguici</h2>
+        <a href="https://www.tiktok.com/@thelegends.ds" target="_blank" class="social-item"><span>TIKTOK</span> <i class="fab fa-tiktok"></i></a>
+        <a href="https://www.instagram.com/ds.thelegends/" target="_blank" class="social-item"><span>INSTAGRAM</span> <i class="fab fa-instagram"></i></a>
+        <a href="https://discord.gg/M5YsRDkBkC" target="_blank" class="social-item"><span>DISCORD</span> <i class="fab fa-discord"></i></a>
+        <a href="#" target="_blank" class="social-item"><span>TWITCH</span> <i class="fab fa-twitch"></i></a>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 THE LEGENDS. DOMINA IL TUO GIOCO.</p>
+</footer>
+
+<script>
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    const glow = document.getElementById('cursor-glow');
+    document.addEventListener('mousemove', (e) => {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+        
+        const logo = document.getElementById('main-logo');
+        const text = document.getElementById('main-text');
+        
+        // Calcolo rotazione
+        const x = (window.innerWidth / 2 - e.clientX) / 15;
+        const y = (window.innerHeight / 2 - e.clientY) / 15;
+
+        // Movimento Logo (più reattivo)
+        if(logo) logo.style.transform = `rotateY(${-x}deg) rotateX(${y}deg) translateZ(20px)`;
+        
+        // Movimento Testo (più lento e sottile)
+        if(text) text.style.transform = `rotateY(${-x/2}deg) rotateX(${y/2}deg) translateZ(10px)`;
+    });
+
+    const cards = document.querySelectorAll('.tilt');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+        });
+    });
+
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    let w, h, particles = [];
+
+    function init() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+        particles = Array.from({length: 60}, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            size: Math.random() * 2,
+            speedY: -Math.random() * 0.5 - 0.2,
+            opacity: Math.random()
+        }));
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => {
+            p.y += p.speedY;
+            if (p.y < -10) p.y = h + 10;
+            ctx.fillStyle = `rgba(200, 155, 60, ${p.opacity})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', init);
+    init();
+    animate();
+</script>
+
+</body>
+</html>
