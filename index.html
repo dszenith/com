@@ -3,298 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZENITH | Benvenuto a Casa</title>
+    <title>ZENITH | Official Hub</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --neon-cyan: #00f2ff;
-            --neon-pink: #ff00e5;
-            --bg-dark: #050508;
-            --accent-glow: rgba(0, 242, 255, 0.15);
-            --glass: rgba(255, 255, 255, 0.02);
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --primary: #ffaa00; 
+            --bg: #050505;
+            --card-bg: #0d0d0d;
+            --text: #ffffff;
+            --accent: #1a1a1a;
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; cursor: none; }
+        body { background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
 
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background: var(--bg-dark);
-            color: #fff;
-            overflow-x: hidden;
-            background: radial-gradient(circle at 50% 50%, #0d0d1a 0%, #050508 100%);
-            line-height: 1.6;
+        /* Custom Cursor */
+        #cursor {
+            width: 20px; height: 20px; border: 2px solid var(--primary); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999; transition: transform 0.1s;
+        }
+        #cursor-dot {
+            width: 4px; height: 4px; background: var(--primary); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
         }
 
-        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; pointer-events: none; }
-
-        #cursor-glow {
-            position: fixed; width: 40px; height: 40px;
-            background: var(--neon-cyan);
-            border-radius: 50%; pointer-events: none; z-index: 10002;
-            transform: translate(-50%, -50%); mix-blend-mode: difference;
-            transition: transform 0.1s ease-out, width 0.3s, height 0.3s;
+        #bg-glow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 170, 0, 0.03) 0%, transparent 70%);
+            pointer-events: none; z-index: -1;
         }
-
-        #line-tracer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10001; }
-        .trace-path { fill: none; stroke: var(--neon-cyan); stroke-width: 1.5; opacity: 0.4; filter: drop-shadow(0 0 5px var(--neon-cyan)); }
 
         header {
-            position: fixed; width: 100%; padding: 20px 8%;
             display: flex; justify-content: space-between; align-items: center;
-            z-index: 1000; background: rgba(5, 5, 8, 0.85); backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 25px 5%; position: fixed; width: 100%; z-index: 1000;
+            background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--accent);
+        }
+        .logo { font-family: 'Archivo Black'; font-size: 1.8rem; text-decoration: none; color: #fff; text-transform: uppercase; }
+        .logo span { color: var(--primary); animation: flicker 3s infinite; }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0; }
         }
 
-        .brand-link { display: flex; align-items: center; text-decoration: none; gap: 18px; }
+        nav a { text-decoration: none; color: #666; font-weight: 900; font-size: 0.7rem; text-transform: uppercase; margin-left: 30px; transition: 0.3s; letter-spacing: 1px; }
+        nav a:hover { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
 
-        .logo-box { width: 50px; height: 50px; perspective: 1000px; position: relative; }
-        .planet-sphere {
-            position: absolute; inset: 12px;
-            background: #fff; border-radius: 50%;
-            box-shadow: 0 0 20px var(--neon-cyan), inset 0 0 10px #000;
-            z-index: 2; animation: pulse 2s infinite alternate;
-        }
-        .ring-container {
-            position: absolute; inset: -5px;
-            transform: rotateX(70deg) rotateY(-10deg);
-            transform-style: preserve-3d; animation: orbit 4s linear infinite;
-        }
-        .ring-visual {
-            position: absolute; inset: 0;
-            border: 2px solid var(--neon-pink); border-radius: 50%;
-            box-shadow: 0 0 15px var(--neon-pink);
-        }
+        section { padding: 150px 10%; border-bottom: 1px solid var(--accent); position: relative; }
+        .reveal { opacity: 0; transform: translateY(50px); transition: 1.2s var(--ease); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
-        @keyframes orbit { from { transform: rotateX(70deg) rotateZ(0deg); } to { transform: rotateX(70deg) rotateZ(360deg); } }
-        @keyframes pulse { from { transform: scale(0.9); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
+        .section-title { font-family: 'Archivo Black'; font-size: clamp(3rem, 8vw, 5rem); text-transform: uppercase; line-height: 0.9; margin-bottom: 50px; }
+        .section-title span { -webkit-text-stroke: 1px var(--primary); color: transparent; }
 
-        .brand-text { 
-            font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; 
-            letter-spacing: 6px; color: #fff; text-transform: uppercase;
+        /* Cards & Interaction */
+        .glass-card {
+            background: var(--card-bg); border: 1px solid var(--accent); padding: 50px;
+            transition: 0.5s var(--ease); position: relative; overflow: hidden;
         }
+        .glass-card:hover { border-color: var(--primary); transform: scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .glass-card::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,170,0,0.05), transparent);
+            transition: 0.5s;
+        }
+        .glass-card:hover::after { left: 100%; }
 
-        nav a { 
-            margin-left: 30px; color: #fff; text-decoration: none; font-size: 0.8rem; 
-            letter-spacing: 3px; font-weight: 600; opacity: 0.6; transition: var(--transition); 
-        }
-        nav a:hover { opacity: 1; color: var(--neon-cyan); text-shadow: 0 0 8px var(--neon-cyan); }
+        /* Livelli Table */
+        .lvl-row { display: flex; align-items: center; padding: 25px; border-bottom: 1px solid var(--accent); transition: 0.3s; }
+        .lvl-row:hover { background: rgba(255,170,0,0.03); padding-left: 40px; }
+        .lvl-num { font-family: 'Archivo Black'; font-size: 2rem; color: var(--primary); margin-right: 30px; width: 50px; }
 
-        .cta-main {
-            background: linear-gradient(45deg, var(--neon-pink), #8000ff);
-            border: none; color: #fff; padding: 12px 28px;
-            font-family: 'Orbitron'; font-weight: 700; font-size: 0.75rem;
-            text-decoration: none; border-radius: 2px;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-            transition: var(--transition); cursor: pointer;
-        }
-        .cta-main:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(255,0,229,0.5); letter-spacing: 1px; }
+        /* Footer & Legal */
+        .legal-footer { background: #000; padding: 100px 10% 50px; border-top: 2px solid var(--primary); }
+        .legal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 50px; margin-bottom: 80px; }
+        .legal-box h4 { font-family: 'Archivo Black'; font-size: 0.8rem; color: var(--primary); margin-bottom: 20px; text-transform: uppercase; }
+        .legal-box p, .legal-box a { color: #555; font-size: 0.8rem; text-decoration: none; transition: 0.3s; }
+        .legal-box a:hover { color: #fff; }
 
-        .page { display: none; padding: 160px 8% 100px; min-height: 100vh; }
-        .page.active { display: block; animation: slideUp 0.6s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .copyright-bar { padding-top: 40px; border-top: 1px solid #111; display: flex; justify-content: space-between; align-items: center; color: #333; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; }
 
-        .hero { height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .hero-tag { color: var(--neon-cyan); letter-spacing: 12px; font-size: 0.9rem; margin-bottom: 20px; font-weight: 300; }
-        .hero h1 { 
-            font-family: 'Orbitron'; font-size: clamp(3rem, 12vw, 8rem); font-weight: 900; 
-            line-height: 1; background: linear-gradient(to bottom, #fff 40%, #555);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.2));
+        .btn-main {
+            display: inline-block; padding: 25px 60px; background: var(--primary); color: #000;
+            text-decoration: none; font-weight: 900; text-transform: uppercase; font-size: 1rem;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); transition: 0.3s;
         }
+        .btn-main:hover { transform: scale(1.1) rotate(-2deg); background: #fff; }
 
-        .section-title { 
-            text-align: center; margin-bottom: 80px; font-family: 'Orbitron'; 
-            font-size: 2.5rem; letter-spacing: 15px; color: #fff; 
-        }
-        .rules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .rule-card { 
-            background: var(--glass); border-left: 4px solid var(--neon-cyan); 
-            padding: 40px; transition: var(--transition); position: relative; overflow: hidden;
-        }
-        .rule-card::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(0, 242, 255, 0.05));
-            transform: translateX(-100%); transition: 0.5s;
-        }
-        .rule-card:hover::before { transform: translateX(0); }
-        .rule-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.05); }
-        .rule-card h3 { font-family: 'Orbitron'; color: var(--neon-cyan); margin-bottom: 15px; letter-spacing: 3px; }
-        .rule-card p { font-size: 1.1rem; opacity: 0.8; font-weight: 300; }
-
-        .social-container { max-width: 800px; margin: 0 auto; display: grid; gap: 20px; }
-        .social-link {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 40px; background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-            text-decoration: none; color: #fff; transition: var(--transition);
-        }
-        .social-link:hover { background: #fff; color: #000; }
-        .social-link i { font-size: 2rem; }
-        .social-link span { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 5px; font-size: 1.5rem; }
-
-        footer { 
-            padding: 60px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);
-            opacity: 0.4; font-size: 0.7rem; letter-spacing: 5px; font-family: 'Orbitron';
-        }
-
-        @media (max-width: 768px) {
-            nav { display: none; }
-            .hero h1 { font-size: 4rem; }
-        }
+        @media (max-width: 768px) { nav, #cursor, #cursor-dot { display: none; } * { cursor: auto; } }
     </style>
 </head>
 <body>
 
-<div id="cursor-glow"></div>
-<svg id="line-tracer"><path class="trace-path" d="" /></svg>
-<canvas id="bg-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+<div id="bg-glow"></div>
 
 <header>
-    <a href="#" class="brand-link" onclick="showPage('home')">
-        <div class="logo-box">
-            <div class="planet-sphere"></div>
-            <div class="ring-container"><div class="ring-visual"></div></div>
-        </div>
-        <span class="brand-text">ZENITH</span>
-    </a>
+    <a href="#" class="logo">ZE<span>NITH</span></a>
     <nav>
-        <a href="#" onclick="showPage('home')">CHI SIAMO</a>
-        <a href="#" onclick="showPage('community')">IL NOSTRO CODEX</a>
-        <a href="#" onclick="showPage('network')">CONTATTI</a>
-        <a href="https://discord.gg/M5YsRDkBkC" target="_blank" class="cta-main" style="margin-left: 40px;">UNISCITI A NOI</a>
+        <a href="#about">Philosophy</a>
+        <a href="#mod">Elite</a>
+        <a href="#levels">Ranks</a>
+        <a href="#rules">Protocol</a>
     </nav>
 </header>
 
-<div id="home" class="page active">
-    <div class="hero">
-        <p class="hero-tag">DOVE OGNI PLAYER FA LA DIFFERENZA</p>
-        <h1>ZENITH</h1>
-        <div style="width: 100px; height: 2px; background: var(--neon-pink); margin: 30px 0;"></div>
-        <p style="max-width: 600px; font-size: 1.2rem; opacity: 0.7; font-weight: 300; letter-spacing: 1px;">
-            Dimentica i server dove sei solo un numero. Qui su ZENITH, cerchiamo persone, non solo player. Entra, gioca e trova il tuo posto in una community che ti ascolta davvero.
-        </p>
-        <button class="cta-main" style="margin-top: 50px; padding: 20px 60px; font-size: 1rem;" onclick="window.open('https://discord.gg/M5YsRDkBkC')">
-            INIZIA IL TUO VIAGGIO
-        </button>
-    </div>
-</div>
+<section id="hero" style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h1 class="reveal active" style="font-family: 'Archivo Black'; font-size: clamp(4rem, 18vw, 12rem); letter-spacing: -5px;">ZENITH</h1>
+    <p class="reveal active" style="letter-spacing: 10px; color: #444; font-weight: 900; text-transform: uppercase;">The Next Gen Community</p>
+</section>
 
-<div id="community" class="page">
-    <h2 class="section-title">IL NOSTRO CODEX</h2>
-    <div class="rules-grid">
-        <div class="rule-card">
-            <h3>01. BENVENUTO</h3>
-            <p>Accogliamo tutti. Non importa il tuo livello, importa come ti poni verso gli altri. La gentilezza è la nostra base.</p>
+<section id="about" class="reveal">
+    <h2 class="section-title">REAL <span>CONNECTIONS</span></h2>
+    <div class="glass-card">
+        <p style="font-size: 1.5rem; color: #eee; font-weight: 600;">In un'era di solitudine digitale, Zenith è l'eccezione. Abbiamo costruito uno spazio dove l'anonimato non è isolamento, ma libertà di essere se stessi. Qui non sei un ID, sei un pilastro della community.</p>
+    </div>
+</section>
+
+<section id="mod" class="reveal">
+    <h2 class="section-title">MOD <span>FORCE</span></h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="glass-card">
+            <h3 style="font-family: 'Archivo Black'; color: var(--primary);">ZERO TOXICITY</h3>
+            <p>Algoritmi e Moderatori umani lavorano in sinergia per eliminare il disturbo prima che ti raggiunga.</p>
         </div>
-        <div class="rule-card">
-            <h3>02. CONDIVISIONE</h3>
-            <p>Siamo qui per divertirci. La competizione esiste, ma l'aiuto reciproco e le risate vengono sempre al primo posto.</p>
-        </div>
-        <div class="rule-card">
-            <h3>03. RISPETTO VERO</h3>
-            <p>Manteniamo l'ambiente pulito e sereno per tutti. Proteggiamo la nostra community da chi porta negatività.</p>
+        <div class="glass-card">
+            <h3 style="font-family: 'Archivo Black'; color: var(--primary);">SUPPORT 24/7</h3>
+            <p>Il nostro sistema Ticket garantisce risposte rapide e risoluzioni eque per ogni membro.</p>
         </div>
     </div>
-    <div style="text-align: center; margin-top: 60px;">
-        <p style="opacity: 0.5; margin-bottom: 20px;">Pronto a farne parte?</p>
-        <a href="https://discord.gg/M5YsRDkBkC" class="cta-main">ENTRA NEL GRUPPO</a>
-    </div>
-</div>
+</section>
 
-<div id="network" class="page">
-    <h2 class="section-title">SOCIAL</h2>
-    <div class="social-container">
-        <a href="https://discord.gg/M5YsRDkBkC" class="social-link">
-            <span>DISCORD</span>
-            <i class="fab fa-discord"></i>
-        </a>
-        <a href="https://www.tiktok.com/@thelegends.ds" class="social-link">
-            <span>TIKTOK</span>
-            <i class="fab fa-tiktok"></i>
-        </a>
-    </div>
-</div>
+<section id="levels" class="reveal">
+    <h2 class="section-title">THE <span>LADDER</span></h2>
+    <div class="lvl-row"><div class="lvl-num">01</div><div><h3 style="font-family: 'Archivo Black';">MEMBRO</h3><p>Ingresso nell'ecosistema.</p></div></div>
+    <div class="lvl-row"><div class="lvl-num">05</div><div><h3 style="font-family: 'Archivo Black';">COSTANTE</h3><p>Privilegi multimediali attivi.</p></div></div>
+    <div class="lvl-row"><div class="lvl-num">15</div><div><h3 style="font-family: 'Archivo Black';">VETERANO</h3><p>Status di fiducia garantito.</p></div></div>
+    <div class="lvl-row" style="background: var(--primary); color: #000;"><div class="lvl-num" style="color:#000">30</div><div><h3 style="font-family: 'Archivo Black';">LEGENDA</h3><p><b>POTERE ASSOLUTO.</b></p></div></div>
+</section>
 
-<footer>ZENITH // CREATO PER VOI // 2026</footer>
+<section id="rules" class="reveal">
+    <h2 class="section-title">THE <span>CODE</span></h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+        <div class="glass-card" style="padding: 20px;"><h4>01. ETICA</h4><p>Rispetto totale verso ogni individuo.</p></div>
+        <div class="glass-card" style="padding: 20px;"><h4>02. PRIVACY</h4><p>Nessuna tolleranza per il Doxxing.</p></div>
+        <div class="glass-card" style="padding: 20px;"><h4>03. SAFETY</h4><p>Vietato materiale illegale o NSFW.</p></div>
+        <div class="glass-card" style="padding: 20px;"><h4>04. ORDER</h4><p>Niente Spam o pubblicità esterna.</p></div>
+    </div>
+    <div style="text-align: center; margin-top: 80px;">
+        <a href="https://discord.gg/M5YsRDkBkC" class="btn-main">ENTRA NELL'ELITE</a>
+    </div>
+</section>
+
+<footer class="legal-footer">
+    <div class="legal-grid">
+        <div class="legal-box">
+            <h4>PROJECT ZENITH</h4>
+            <p>La community fondata per ridefinire gli standard di interazione sociale su Discord.</p>
+        </div>
+        <div class="legal-box">
+            <h4>LEGAL & PRIVACY</h4>
+            <a href="#">Terms of Service</a><br>
+            <a href="#">Privacy Policy</a><br>
+            <a href="#">Cookie Guidelines</a>
+        </div>
+        <div class="legal-box">
+            <h4>CONTATTI</h4>
+            <p>Discord: zenith.staff</p>
+            <p>Email: legal@zenithproject.com</p>
+        </div>
+    </div>
+    <div class="copyright-bar">
+        <div>© 2026 ZENITH PROJECT. ALL RIGHTS RESERVED.</div>
+        <div>DESIGNED & OWNED BY L E G E N D S</div>
+    </div>
+    <p style="font-size: 0.6rem; color: #222; margin-top: 20px; text-align: justify;">
+        Tutti i contenuti, marchi, loghi e grafiche presenti su questo sito sono di proprietà esclusiva di L E G E N D S. Ogni riproduzione non autorizzata sarà perseguita a norma di legge. Il presente server non è affiliato a Discord Inc.
+    </p>
+</footer>
 
 <script>
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-    let w, h, stars = [];
-
-    function initBg() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-        stars = Array.from({length: 60}, () => ({
-            x: Math.random()*w,
-            y: Math.random()*h,
-            r: Math.random()*1.5,
-            v: Math.random()*0.2 + 0.1
-        }));
-    }
-
-    function drawBg() {
-        ctx.clearRect(0,0,w,h);
-        ctx.fillStyle = "rgba(255,255,255,0.4)";
-        stars.forEach(s => {
-            s.y -= s.v;
-            if(s.y < 0) s.y = h;
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-            ctx.fill();
-        });
-        requestAnimationFrame(drawBg);
-    }
-
-    const glow = document.getElementById('cursor-glow');
-    const path = document.querySelector('.trace-path');
-    let points = [], mX = 0, mY = 0, curX = 0, curY = 0;
-
+    // Cursor Movement
+    const cursor = document.getElementById('cursor');
+    const dot = document.getElementById('cursor-dot');
     document.addEventListener('mousemove', (e) => {
-        mX = e.clientX; mY = e.clientY;
-    });
-
-    function updateLine() {
-        curX += (mX - curX) * 0.15;
-        curY += (mY - curY) * 0.15;
-        glow.style.left = curX + 'px';
-        glow.style.top = curY + 'px';
-
-        points.unshift({x: curX, y: curY});
-        if (points.length > 15) points.pop();
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        dot.style.left = e.clientX + 'px';
+        dot.style.top = e.clientY + 'px';
         
-        if (points.length > 1) {
-            let d = `M ${points[0].x} ${points[0].y}`;
-            for (let i = 1; i < points.length; i++) {
-                d += ` L ${points[i].x} ${points[i].y}`;
-            }
-            path.setAttribute('d', d);
-        }
-        requestAnimationFrame(updateLine);
-    }
-
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    }
-
-    document.querySelectorAll('a, button').forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            glow.style.width = '80px'; glow.style.height = '80px';
-            glow.style.background = 'transparent'; glow.style.border = '1px solid var(--neon-cyan)';
-        });
-        el.addEventListener('mouseleave', () => {
-            glow.style.width = '40px'; glow.style.height = '40px';
-            glow.style.background = 'var(--neon-cyan)'; glow.style.border = 'none';
-        });
+        // Glow effect
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        document.getElementById('bg-glow').style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(255, 170, 0, 0.08) 0%, transparent 70%)`;
     });
 
-    window.addEventListener('resize', initBg);
-    initBg(); drawBg(); updateLine();
+    // Scroll Reveal
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 
 </body>
